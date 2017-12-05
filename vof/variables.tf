@@ -27,6 +27,11 @@ variable "machine_type" {
   default = "n1-standard-1"
 }
 
+variable "small_machine_type" {
+  type = "string"
+  default = "g1-small"
+}
+
 variable "credential_file" {
   type = "string"
   default = "../shared/account.json"
@@ -42,12 +47,12 @@ variable "state_path" {
 
 variable "max_instances" {
   type = "string"
-  default = "2"
+  default = "4"
 }
 
 variable "min_instances" {
   type = "string"
-  default = "1"
+  default = "2"
 }
 
 variable "vof_disk_image" {
@@ -135,5 +140,13 @@ variable "db_master_replica_password" {
 }
 
 variable "service_account_email" {
+  type = "string"
+}
+
+variable "slack_webhook_url" {
+  type = "string"
+}
+
+variable "slack_channel" {
   type = "string"
 }

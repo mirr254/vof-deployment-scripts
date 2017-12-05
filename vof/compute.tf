@@ -17,8 +17,8 @@ resource "google_compute_instance_group_manager" "vof-app-server-group-manager" 
   base_instance_name = "${var.env_name}-vof-app-instance"
   instance_template = "${google_compute_instance_template.vof-app-server-template.self_link}"
   zone = "${var.zone}"
-  update_strategy = "RESTART"
-  target_size = 1
+  update_strategy = "NONE"
+  target_size = 2
 
   named_port {
     name = "customhttp"
@@ -56,6 +56,8 @@ resource "google_compute_instance_template" "vof-app-server-template" {
     databaseName = "${var.env_name}-vof-database"
     railsEnv = "${var.env_name}"
     bucketName = "${var.bucket}"
+    slackChannel = "${var.slack_channel}"
+    slackWebhook = "${var.slack_webhook_url}"
     startup-script = "/home/vof/start_vof.sh"
     serial-port-enable = 1
   }
