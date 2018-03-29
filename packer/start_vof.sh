@@ -11,12 +11,26 @@ get_var() {
 }
 
 export PORT="${PORT:-8080}"
+export SSL_CONFIG_PATH="ssl://0.0.0.0:8080?key=/home/vof/andela_key.key&cert=/home/vof/andela_certificate.crt"
 export RAILS_ENV="$(get_var "railsEnv")"
+export REDIS_IP=$(get_var "redisIp")
+export BUGSNAG_KEY="$(get_var "bugsnagKey")"
+export DEPLOY_ENV="$(get_var "railsEnv")"
+if [[ "$(get_var "railsEnv")" == "design-v2" ]]; then
+ export DEPLOY_ENV="staging"
+fi
+
+export BUCKET_NAME=$(get_var "bucketName")
 sudo echo "export SLACK_WEBHOOK=$(get_var "slackWebhook")" >> /home/vof/.env_setup_rc
 sudo echo "export SLACK_CHANNEL=$(get_var "slackChannel")" >> /home/vof/.env_setup_rc
+gsutil cp gs://${BUCKET_NAME}/ssl/andela_key.key /home/vof/andela_key.key
+gsutil cp gs://${BUCKET_NAME}/ssl/andela_certificate.crt /home/vof/andela_certificate.crt
 
 update_application_yml() {
   cat <<EOF >> /home/vof/app/config/application.yml
+ACTION_CABLE_URL: '$(get_var "cableURL")'
+REDIS_URL: 'redis://${REDIS_IP}'
+BUGSNAG_KEY: '$(get_var "bugsnagKey")'
 API_URL: 'https://api-staging.andela.com/'
 LOGIN_URL: 'https://api-staging.andela.com/login?redirect_url='
 LOGOUT_URL: 'https://api-staging.andela.com/logout?redirect_url='
@@ -35,6 +49,8 @@ staging:
   secret_key_base: "$(openssl rand -hex 64)"
 development:
   secret_key_base: "$(openssl rand -hex 64)"
+sandbox:
+  secret_key_base: "$(openssl rand -hex 64)"
 EOF
 }
 
@@ -47,7 +63,7 @@ create_log_files() {
 create_vof_supervisord_conf() {
   sudo cat <<EOF > /etc/supervisor/conf.d/vof.conf
 [program:vof]
-command=/usr/bin/env RAILS_ENV=${RAILS_ENV} PORT=${PORT} RAILS_SERVE_STATIC_FILES=true /usr/bin/nohup /usr/local/bin/bundle exec puma -C config/puma.rb
+command=/usr/bin/env RAILS_ENV=${DEPLOY_ENV} PORT=${PORT} RAILS_SERVE_STATIC_FILES=true /usr/bin/nohup /usr/local/bin/bundle exec puma -b ${SSL_CONFIG_PATH} -C config/puma.rb
 directory=/home/vof/app
 autostart=true
 autorestart=true
@@ -57,7 +73,6 @@ stdout_logfile=/var/log/vof/vof.out.log
 user=vof
 EOF
 }
-
 authenticate_service_account() {
   if gcloud auth activate-service-account --key-file=/home/vof/account.json; then
     echo "Service account authentication successful"
@@ -65,12 +80,15 @@ authenticate_service_account() {
 }
 
 get_database_dump_file() {
-  if [[ "$RAILS_ENV" == "production" || "$RAILS_ENV" == "staging" ]]; then
-    export BUCKET_NAME=$(get_var "bucketName")
+  if [[ "$RAILS_ENV" == "production" || "$RAILS_ENV" == "staging" || "$RAILS_ENV" == "sandbox" ]]; then
     if gsutil cp gs://${BUCKET_NAME}/database-backups/vof_${RAILS_ENV}.sql /home/vof/vof_${RAILS_ENV}.sql; then
       echo "Database dump file created succesfully"
     fi
   fi
+}
+start_bugsnag(){
+ local app_root="/home/vof/app"
+sudo -u vof bash -c " cd ${app_root} && rails generate bugsnag ${BUGSNAG_KEY} -f"
 }
 
 start_app() {
@@ -78,7 +96,7 @@ start_app() {
 
   sudo -u vof bash -c "mkdir -p /home/vof/app/log"
 
-  if [[ "$RAILS_ENV" == "production" || "$RAILS_ENV" == "staging" ]]; then
+  if [[ "$RAILS_ENV" == "production" || "$RAILS_ENV" == "staging" || "$RAILS_ENV" == "sandbox" ]]; then
     # One time actions
     # Check if the database was already imported
     if export PGPASSWORD=$(get_var "databasePassword"); psql -h $(get_var "databaseHost") -p 5432 -U $(get_var "databaseUser") -d $(get_var "databaseName") -c 'SELECT key FROM ar_internal_metadata' 2>/dev/null | grep environment >/dev/null; then
@@ -91,7 +109,6 @@ start_app() {
     sudo -u vof bash -c "cd ${app_root} && env RAILS_ENV=${RAILS_ENV} bundle exec rake db:setup"
     sudo -u vof bash -c "cd ${app_root} && env RAILS_ENV=${RAILS_ENV} bundle exec rake db:seed"
   fi
-
   supervisorctl update && supervisorctl reload
 }
 
@@ -111,6 +128,17 @@ configure_google_fluentd_logging() {
 </source>
 EOF
 
+  sudo cat <<EOF > /etc/google-fluentd/config.d/vof_sandbox_logs.conf
+<source>
+  @type tail
+  format none
+  path /home/vof/app/log/sandbox.log
+  pos_file /var/lib/google-fluentd/pos/vof.pos
+  read_from_head true
+  tag vof_sandbox_logs
+</source>
+EOF
+
   sudo cat <<EOF > /etc/google-fluentd/config.d/vof_production_logs.conf
 <source>
   @type tail
@@ -120,7 +148,7 @@ EOF
   read_from_head true
   tag vof_production_logs
 </source>
-EOF 
+EOF
 
   sudo cat <<EOF > /etc/google-fluentd/config.d/vof_production_test_logs.conf
 <source>
@@ -154,6 +182,7 @@ configure_log_reader_positioning(){
 /home/vof/app/log/staging.log   000000000000000  000000000000000
 /home/vof/app/log/production_test.log  000000000000000  000000000000000
 /home/vof/app/log/development.log  000000000000000  000000000000000
+/home/vof/app/log/sandbox.log  000000000000000  000000000000000
 EOF
 }
 
@@ -170,6 +199,7 @@ include /etc/logrotate.d
 /var/log/vof/vof.out.log
 /var/log/vof/vof.err.log
 /home/vof/app/log/staging.log
+/home/vof/app/log/sandbox.log
 /home/vof/app/log/production.log
 {
     weekly
@@ -206,7 +236,7 @@ EOF
 
 }
 
-# Reason: When the logs are successfully rotated, the newly setup log files can't be written by the current rails app 
+# Reason: When the logs are successfully rotated, the newly setup log files can't be written by the current rails app
 # instance so supervisord is reload through this cron so that the app starts writing the log to the new log file.
 create_supervisord_cronjob() {
   cat > supervisord_cron <<'EOF'
@@ -230,7 +260,7 @@ main() {
 
   authenticate_service_account
   get_database_dump_file
-
+  start_bugsnag
   start_app
   configure_google_fluentd_logging
   configure_log_reader_positioning
