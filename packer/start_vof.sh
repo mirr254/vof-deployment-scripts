@@ -3,6 +3,12 @@
 set -ex
 set -o pipefail
 
+export SCRIPT_FILE="/home/vof/setup-scripts"
+
+# import functions
+. ${SCRIPT_FILE}/setup_filebeat.sh
+. ${SCRIPT_FILE}/setup_metricbeat.sh
+
 get_var() {
   local name="$1"
 
@@ -52,6 +58,8 @@ POSTGRES_USER: '$(get_var "databaseUser")'
 POSTGRES_PASSWORD: '$(get_var "databasePassword")'
 POSTGRES_HOST: '$(get_var "databaseHost")'
 POSTGRES_DB: '$(get_var "databaseName")'
+GOOGLE_STORAGE_ACCESS_KEY_ID: '$(get_var "google_storage_access_key_id")'
+GOOGLE_STORAGE_SECRET_ACCESS_KEY: '$(get_var "google_storage_secret_access_key")'
 EOF
 }
 
@@ -95,6 +103,11 @@ authenticate_service_account() {
 
 authorize_database_access_networks() {
   CURRENTIPS="$(gcloud compute instances list --project vof-tracker-app | grep ${RAILS_ENV}-vof-app-instance | awk -v ORS=, '{if ($5) print $5}' | sed 's/,$//')"
+
+  # authorize certain IPs to access staging db but not the production db
+  if [ "$RAILS_ENV" != "production" ]; then
+    CURRENTIPS="${CURRENTIPS},105.21.72.66,105.21.32.90,105.27.99.66,41.90.97.134,41.75.89.154,169.239.188.10,41.215.245.118"
+  fi
 
   # ensure replica's authorized networks are also updated
   for sqlInstanceName in $(gcloud sql instances list --project vof-tracker-app | grep ${RAILS_ENV}-vof-database-instance | awk -v ORS=" " '{if ($1 !~ /production-vof-database-instance-vew0wndaum8/) print $1}'); do
@@ -279,7 +292,6 @@ update_crontab() {
   rm upgrades_cron log_cron supervisord_cron
 }
 
-
 main() {
   echo "startup script invoked at $(date)" >> /tmp/script.log
 
@@ -296,6 +308,13 @@ main() {
   set -o pipefail
   get_database_dump_file
   start_bugsnag
+
+  install_filebeat
+  setup_filebeat
+
+  install_metricbeat
+  setup_metricbeat
+
   start_app
   configure_google_fluentd_logging
   configure_log_reader_positioning
