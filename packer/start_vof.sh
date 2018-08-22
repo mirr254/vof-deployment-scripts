@@ -310,8 +310,6 @@ main() {
   start_bugsnag
 
   setup_filebeat
-
-  install_metricbeat
   setup_metricbeat
 
   start_app
