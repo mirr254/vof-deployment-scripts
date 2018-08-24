@@ -88,7 +88,7 @@ chmod 0600 /home/vof/.pgpass
 edit_postgresql_backup_file(){
   if [ "$RAILS_ENV" == "production" ]; then
     # create backups directory
-    mkdir /home/vof/backups
+    mkdir -p /home/vof/backups
     #change permissions on backup folder
     chmod 777 /home/vof/backups
     chmod 777 /home/vof/post_backup_to_slack.sh
@@ -118,7 +118,12 @@ EOF
 
 create_delete_images_cronjob() {
   chmod 777 /home/vof/delete_images.sh
+<<<<<<< HEAD
   # add existing cronjobs to cron_delete_images to avoid overwriting them
+=======
+  #On production, add existing cronjobs(post backups) to cron_delete_images
+  # to avoid overwriting it
+>>>>>>> chore(502 errors): fix issue with 502 errors reporting implementation
   if [ "$RAILS_ENV" == "production" ]; then
     crontab -l -u vof > cron_delete_images
   fi
@@ -131,6 +136,30 @@ EOF
   crontab -u vof cron_delete_images
 }
 
+<<<<<<< HEAD
+=======
+update_downtime_script(){
+  sudo chown vof:vof /home/vof/downtime.sh
+  chmod 777 /home/vof/downtime.sh
+  if [ "$RAILS_ENV" == "production" ]; then
+    sed -i 's/vof-url/vof.andela.com/g' /home/vof/downtime.sh
+  elif [ "$RAILS_ENV" == "staging" ]; then
+    sed -i 's/vof-url/vof-staging.andela.com/g' /home/vof/downtime.sh
+  else
+    sed -i 's/vof-url/vof-sandbox.andela.com/g' /home/vof/downtime.sh
+  fi
+  # add existing cronjobs to cron_file_downtime to avoid overriding them
+  crontab -l -u vof > cron_file_downtime
+  # append new cron job
+  cat >> cron_file_downtime <<'EOF'
+# create cron job that runs downtime script every minute
+*/1 * * * * /bin/bash /home/vof/downtime.sh
+EOF
+  # add all cron jobs to crontabs
+  crontab -u vof cron_file_downtime
+}
+
+>>>>>>> chore(502 errors): fix issue with 502 errors reporting implementation
 create_secrets_yml() {
   cat <<EOF > /home/vof/app/config/secrets.yml
 production:
@@ -331,6 +360,7 @@ main() {
   configure_google_fluentd_logging
 
   create_delete_images_cronjob
+  update_downtime_script
   configure_logrotate
   create_unattended_upgrades_cronjob
   create_supervisord_cronjob
