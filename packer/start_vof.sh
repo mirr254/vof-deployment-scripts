@@ -118,12 +118,8 @@ EOF
 
 create_delete_images_cronjob() {
   chmod 777 /home/vof/delete_images.sh
-<<<<<<< HEAD
-  # add existing cronjobs to cron_delete_images to avoid overwriting them
-=======
   #On production, add existing cronjobs(post backups) to cron_delete_images
   # to avoid overwriting it
->>>>>>> chore(502 errors): fix issue with 502 errors reporting implementation
   if [ "$RAILS_ENV" == "production" ]; then
     crontab -l -u vof > cron_delete_images
   fi
@@ -136,8 +132,6 @@ EOF
   crontab -u vof cron_delete_images
 }
 
-<<<<<<< HEAD
-=======
 update_downtime_script(){
   sudo chown vof:vof /home/vof/downtime.sh
   chmod 777 /home/vof/downtime.sh
@@ -159,7 +153,6 @@ EOF
   crontab -u vof cron_file_downtime
 }
 
->>>>>>> chore(502 errors): fix issue with 502 errors reporting implementation
 create_secrets_yml() {
   cat <<EOF > /home/vof/app/config/secrets.yml
 production:
