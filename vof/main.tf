@@ -1,7 +1,8 @@
 provider "google" {
+  version     = "<= 1.17"
   credentials = "${file("${var.credential_file}")}"
-  project = "${var.project_id}"
-  region = "${var.region}"
+  project     = "${var.project_id}"
+  region      = "${var.region}"
 }
 
 terraform {
@@ -12,10 +13,11 @@ terraform {
 
 data "terraform_remote_state" "vof" {
   backend = "gcs"
+
   config {
-    bucket = "${var.bucket}"
-    path = "${var.state_path}"
-    project = "${var.project_id}"
+    bucket      = "${var.bucket}"
+    path        = "${var.state_path}"
+    project     = "${var.project_id}"
     credentials = "${file("${var.credential_file}")}"
   }
 }
