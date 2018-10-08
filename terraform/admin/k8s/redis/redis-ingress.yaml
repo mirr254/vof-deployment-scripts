@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: vof-redis
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    kubernetes.io/ingress.global-static-ip-name: "apprenticeship-redis-ip"
+spec:
+  backend:
+    serviceName: redis-vof
+    servicePort: server-port
