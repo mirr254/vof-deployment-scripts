@@ -1,0 +1,56 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: redis-vof
+  name: redis-vof
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: redis-vof
+  template:
+    metadata:
+      labels:
+        run: redis-vof
+    spec:
+      containers:
+        - name: redis-vof
+          image: redis
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          ports:
+          - containerPort: 6379
+          livenessProbe:
+            exec:
+              command: 
+                - redis-cli
+                - ping
+            periodSeconds: 3
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+            initialDelaySeconds: 15
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: redis-vof
+  name: redis-vof
+  namespace: default
+spec:
+  ports:
+    - name: server-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    run: redis-vof
+  type: NodePort
