@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vof-mrm-redis
+spec:
+  selector:
+    matchLabels:
+      app: vof-mrm-redis
+  serviceName: 'redis-svc'
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: vof-mrm-redis
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: vof-mrm-redis
+          image: k8s.gcr.io/redis:e2e
+          volumeMounts:
+            - name: redis-storage
+              mountPath: /data/redis
+          resources:
+            requests:
+              cpu: 200m
+              memory: 200Mi
+          ports:
+            - containerPort: 6379
+              name: redis
+          livenessProbe:
+            exec:
+              command: ['redis-cli', 'ping']
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+      volumes:
+        - name: redis-storage
+          gcePersistentDisk:
+            pdName: my-data-disk
+            fsType: ext4
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-storage
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: 'redis-storage'
+        resources:
+          requests:
+            storage: 2Gi

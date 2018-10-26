@@ -9,6 +9,7 @@ metadata:
 spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
+  loadBalancerIP: { { REDIS_IP } }
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
@@ -38,8 +39,8 @@ spec:
         app.kubernetes.io/name: ingress-nginx
         app.kubernetes.io/part-of: ingress-nginx
       annotations:
-        prometheus.io/port: "10254"
-        prometheus.io/scrape: "true"
+        prometheus.io/port: '10254'
+        prometheus.io/scrape: 'true'
     spec:
       serviceAccountName: nginx-ingress-serviceaccount
       containers:
@@ -92,7 +93,6 @@ spec:
             timeoutSeconds: 1
 
 ---
-
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -102,4 +102,4 @@ metadata:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
 data:
-  6379: "default/redis-vof:6379"
+  6379: 'default/redis-svc:6379'
