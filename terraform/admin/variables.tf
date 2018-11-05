@@ -72,3 +72,7 @@ variable "elk_server_image" {
 variable "redis_server_image" {
   default = "ubuntu-1604-xenial-v20180912"
 }
+
+variable "admin_cluster_master_password" {
+  type = "string"
+}
