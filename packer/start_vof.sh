@@ -170,6 +170,9 @@ create_log_files() {
   mkdir -p /var/log/vof
   touch /var/log/vof/vof.out.log /var/log/vof/vof.err.log
   sudo chown -R vof:vof /var/log/vof/vof.out.log /var/log/vof/vof.err.log
+  # add sidekiq log files
+  touch /var/log/vof/sidekiq.out.log /var/log/vof/sidekiq.err.log
+  sudo chown -R vof:vof /var/log/vof/sidekiq.out.log /var/log/vof/sidekiq.err.log
 }
 
 create_vof_supervisord_conf() {
@@ -185,6 +188,22 @@ stdout_logfile=/var/log/vof/vof.out.log
 user=vof
 EOF
 }
+
+# create sidekiq supervisord config
+create_sidekiq_supervisord_conf() {
+  sudo cat <<EOF > /etc/supervisor/conf.d/sidekiq.conf
+[program:vof_sidekiq]
+command=/usr/bin/env RAILS_ENV=${DEPLOY_ENV} /usr/bin/nohup /usr/local/bin/bundle exec sidekiq -e ${RAILS_ENV}
+directory=/home/vof/app
+autostart=true
+autorestart=true
+startretries=3
+stderr_logfile=/var/log/vof/sidekiq.err.log
+stdout_logfile=/var/log/vof/sidekiq.out.log
+user=vof
+EOF
+}
+
 authenticate_service_account() {
   if gcloud auth activate-service-account --key-file=/home/vof/account.json; then
     echo "Service account authentication successful"
@@ -269,6 +288,8 @@ su root root
 include /etc/logrotate.d
 /var/log/vof/vof.out.log
 /var/log/vof/vof.err.log
+/var/log/vof/sidekiq.out.log
+/var/log/vof/sidekiq.err.log
 /home/vof/app/log/staging.log
 /home/vof/app/log/sandbox.log
 /home/vof/app/log/production.log
