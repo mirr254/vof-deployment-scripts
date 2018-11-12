@@ -1,8 +1,5 @@
 - name: Downloading and installing logging agent
-  shell: 
-    chdir: /home/vof
+  shell:
     cmd: |
       curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
-      bash /home/vof/installing-logging-agent.sh
-      rm -f /home/vof/installing-logging-agent.sh
-  become: yes
+      bash install-logging-agent.sh

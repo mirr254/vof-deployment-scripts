@@ -16,6 +16,10 @@ ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 # install beta components
 RUN gcloud components install beta --quiet
 
+RUN apt-get update && apt-get install python3
+
+RUN apt-get install ansible=2.7.0
+
 # install packer
 ADD https://releases.hashicorp.com/packer/1.1.0/packer_1.1.0_linux_amd64.zip /workdir/
 
@@ -30,5 +34,5 @@ RUN cd /workdir \
   && chmod +x terraform \
   && mv terraform /usr/local/bin/ \
   && rm -r /workdir
-  
+
 USER circleci

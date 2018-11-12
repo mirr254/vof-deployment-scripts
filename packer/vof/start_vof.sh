@@ -3,11 +3,10 @@
 set -ex
 set -o pipefail
 
-export SCRIPT_FILE="/home/vof/setup-scripts"
-
-# import functions
-. ${SCRIPT_FILE}/setup_filebeat.sh
-. ${SCRIPT_FILE}/setup_metricbeat.sh
+# clone repository with the new changes using the commit hash
+# get_repo() {
+#   git clone
+# }
 
 get_var() {
   local name="$1"
@@ -338,9 +337,6 @@ main() {
   set -o pipefail
   get_database_dump_file
   start_bugsnag
-
-  setup_filebeat
-  setup_metricbeat
 
   start_app
   configure_google_fluentd_logging

@@ -1,0 +1,14 @@
+- name: Add the user 'vof'
+  user:
+    name: vof
+    shell: /bin/bash
+
+- name: change directory owner
+  file:
+    path: /home/vof
+    owner: vof
+
+- name: start supervisor
+  service:
+    name: supervisor
+    state: started
