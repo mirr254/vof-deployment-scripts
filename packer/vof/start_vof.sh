@@ -4,9 +4,25 @@ set -ex
 set -o pipefail
 
 # clone repository with the new changes using the commit hash
-# get_repo() {
-#   git clone
-# }
+update_repo() {
+  sudo su vof
+  BUILD_COMMIT=$(curl http://metadata.google.internal/computeMetadata/v1/project/attributes/{{ build_commit }} -H "Metadata-Flavor: Google")
+  cd /home/vof
+  sudo chown -R vof app/
+  echo -e "Host github.com\n\tStrictHostKeyChecking no" > ~/.ssh/config
+  echo -e "\tIdentityFile ~/.ssh/vof_tracker_key\n" >> ~/.ssh/config
+
+  cd app/
+  git stash
+
+  if [ "$RAILS_ENV" == "production" ]; then
+    git pull origin master
+  else
+    git pull origin develop
+  fi
+
+  git checkout ${BUILD_COMMIT}
+}
 
 get_var() {
   local name="$1"
@@ -21,8 +37,9 @@ export RAILS_ENV="$(get_var "railsEnv")"
 export REDIS_IP=$(get_var "redisIp")
 export BUGSNAG_KEY="$(get_var "bugsnagKey")"
 export DEPLOY_ENV="$(get_var "railsEnv")"
+export VOF_PROJECT_REPO="$(get_var "projectRepo")"
 if [[ "$(get_var "railsEnv")" == "design-v2" ]]; then
- export DEPLOY_ENV="staging"
+  export DEPLOY_ENV="staging"
 fi
 
 export BUCKET_NAME=$(get_var "bucketName")
@@ -68,7 +85,7 @@ AUTH_ACCESS_TOKEN: '2574fd1d8c985221c7053931b614359feaf981840fe1c65c9d79e4938899
 PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu/PXShcrLcoKYYr6sAuU\nGPjmb0qSwo5aYDjnXJ2fWbzeC+PadR2n6Pn9vWwZzOv6nSM5ocVNNRpAyHvT0mQf\n7DikDJANSwpQHwYpKkgdBDydzMeOBhFpkhLeUOfnF4a/sfB8OP+/PvW5vsRhx4WR\n+1PZDFXuCq/AbcBuzBsNJ8Q3gmB2/m7VeltIb5QXIs5zHCFC0tLS/WCNYfcfhviW\n7sz3qVSggrhEs2SgpvMBwiQHwNkP7/vfrNl6pKctLTvibdlWfF9JiER+a8Eq/Dge\nSnt70Gtn5rQnkN08DNLfxjiSskzef8pNh+9H5oI7Ee5UJpIOEyQ7p+XzEDzT1zy5\nTQIDAQAB\n-----END PUBLIC KEY-----"
 EOF
 else
- cat <<EOF >> /home/vof/app/config/application.yml
+  cat <<EOF >> /home/vof/app/config/application.yml
 AUTH_URL: 'https://vof-login-staging.andela.com'
 PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu/PXShcrLcoKYYr6sAuU\nGPjmb0qSwo5aYDjnXJ2fWbzeC+PadR2n6Pn9vWwZzOv6nSM5ocVNNRpAyHvT0mQf\n7DikDJANSwpQHwYpKkgdBDydzMeOBhFpkhLeUOfnF4a/sfB8OP+/PvW5vsRhx4WR\n+1PZDFXuCq/AbcBuzBsNJ8Q3gmB2/m7VeltIb5QXIs5zHCFC0tLS/WCNYfcfhviW\n7sz3qVSggrhEs2SgpvMBwiQHwNkP7/vfrNl6pKctLTvibdlWfF9JiER+a8Eq/Dge\nSnt70Gtn5rQnkN08DNLfxjiSskzef8pNh+9H5oI7Ee5UJpIOEyQ7p+XzEDzT1zy5\nTQIDAQAB\n-----END PUBLIC KEY-----"
 AUTH_ACCESS_TOKEN: '48572b447d4f96cad034cb9f6ed9d0885864de64d77c4fd90bd90164998b1fd471ba2011b3a409c107a7032529abc9f4c3456da0cd74ac7b249086440bb2daab'
@@ -218,7 +235,7 @@ get_database_dump_file() {
   fi
 }
 start_bugsnag(){
- local app_root="/home/vof/app"
+  local app_root="/home/vof/app"
 sudo -u vof bash -c " cd ${app_root} && rails generate bugsnag ${BUGSNAG_KEY} -f"
 }
 
@@ -329,6 +346,7 @@ main() {
   create_secrets_yml
   create_vof_supervisord_conf
   authenticate_service_account
+  update_repo
   set +o errexit
   set +o pipefail
     authorize_redis_access_ips
