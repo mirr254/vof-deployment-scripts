@@ -93,14 +93,10 @@ resource "google_compute_instance_template" "template" {
     google_storage_access_key_id     = "${var.google_storage_access_key_id}"
     google_storage_secret_access_key = "${var.google_storage_secret_access_key}"
     dbBackupNotificationToken        = "${var.db_backup_notification_token}"
-
-    databaseInstanceName = "${var.shared_database_instance_name}"
-
-    databaseUser = "${format("%s-%s", var.project_name, var.environment)}"
-
-    databasePassword = "${format("%s-%s", var.project_name, var.environment)}"
-
-    databaseHost = "${var.shared_database_instance_ip}"
+    databaseInstanceName             = "${var.shared_database_instance_name}"
+    databaseUser                     = "${format("%s-%s", var.project_name, var.environment)}"
+    databasePassword                 = "${format("%s-%s", var.project_name, var.environment)}"
+    databaseHost                     = "${var.shared_database_instance_ip}"
   }
 
   lifecycle {
