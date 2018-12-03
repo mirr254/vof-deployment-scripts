@@ -350,6 +350,7 @@ main() {
   update_application_yml
   create_secrets_yml
   create_vof_supervisord_conf
+  create_sidekiq_supervisord_conf
   authenticate_service_account
   set +o errexit
   set +o pipefail
