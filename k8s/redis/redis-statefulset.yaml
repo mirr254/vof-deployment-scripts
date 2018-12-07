@@ -1,29 +1,38 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: vof-mrm-redis
+  name: apprenticeship-redis
 spec:
   selector:
     matchLabels:
-      app: vof-mrm-redis
-  serviceName: 'redis-svc'
-  replicas: 3
+      app: apprenticeship-redis
+  serviceName: 'redis-service'
+  replicas: 4
   template:
     metadata:
       labels:
-        app: vof-mrm-redis
+        app: apprenticeship-redis
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-        - name: vof-mrm-redis
-          image: k8s.gcr.io/redis:e2e
+        - name: apprenticeship-redis
+          image: redis
+          args:
+            - /etc/redis/redis.conf
           volumeMounts:
+            - mountPath: /etc/redis
+              name: redis-config
+              readOnly: false
             - name: redis-storage
-              mountPath: /data/redis
+              mountPath: /data
+              readOnly: false
           resources:
             requests:
-              cpu: 200m
-              memory: 200Mi
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 150m
+              memory: 256Mi
           ports:
             - containerPort: 6379
               name: redis
@@ -36,16 +45,15 @@ spec:
             successThreshold: 1
             failureThreshold: 2
       volumes:
-        - name: redis-storage
-          gcePersistentDisk:
-            pdName: my-data-disk
-            fsType: ext4
+        - name: redis-config
+          configMap:
+            name: redis-config
   volumeClaimTemplates:
     - metadata:
         name: redis-storage
       spec:
-        accessModes: ['ReadWriteOnce']
-        storageClassName: 'redis-storage'
+        accessModes:
+          - ReadWriteOnce
         resources:
           requests:
-            storage: 2Gi
+            storage: 1Gi

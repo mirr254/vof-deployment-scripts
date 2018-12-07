@@ -85,7 +85,7 @@ resource "google_compute_firewall" "bastion_host" {
 resource "google_container_cluster" "admin-redis-elk-cluster" {
   name               = "redis-elk-cluster"
   zone               = "europe-west1-b"
-  initial_node_count = 1
+  initial_node_count = 2
   network = "${module.network.self_link}"
   subnetwork = "${module.network.public_network_name}"
 
