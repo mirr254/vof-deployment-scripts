@@ -17,7 +17,7 @@ get_var() {
 }
 
 export PORT="${PORT:-8080}"
-export SSL_CONFIG_PATH="ssl://0.0.0.0:8080?key=/home/vof/andela_key.key&cert=/home/vof/andela_certificate.crt"
+export SSL_CONFIG_PATH="ssl://0.0.0.0:8080?key=/home/vof/andela_key.key&cert=/home/vof/andela_certificate.pem"
 export RAILS_ENV="$(get_var "railsEnv")"
 export REDIS_IP=$(get_var "redisIp")
 export BUGSNAG_KEY="$(get_var "bugsnagKey")"
@@ -30,7 +30,7 @@ export BUCKET_NAME=$(get_var "bucketName")
 sudo echo "export SLACK_WEBHOOK=$(get_var "slackWebhook")" >> /home/vof/.env_setup_rc
 sudo echo "export SLACK_CHANNEL=$(get_var "slackChannel")" >> /home/vof/.env_setup_rc
 gsutil cp gs://${BUCKET_NAME}/ssl/andela_key.key /home/vof/andela_key.key
-gsutil cp gs://${BUCKET_NAME}/ssl/andela_certificate.crt /home/vof/andela_certificate.crt
+gsutil cp gs://${BUCKET_NAME}/ssl/andela_certificate.pem /home/vof/andela_certificate.pem
 
 
 export API_URL='https://api-staging.andela.com/'

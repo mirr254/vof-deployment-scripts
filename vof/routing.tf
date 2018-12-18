@@ -24,7 +24,7 @@ resource "google_compute_ssl_certificate" "vof-ssl-certificate" {
   name_prefix = "vof-certificate-"
   description = "VOF HTTPS certificate"
   private_key = "${file("../shared/andela_key.key")}"
-  certificate = "${file("../shared/andela_certificate.crt")}"
+  certificate = "${file("../shared/andela_certificate.pem")}"
 
   lifecycle {
     create_before_destroy = true
