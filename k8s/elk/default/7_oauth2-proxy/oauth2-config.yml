@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: default
+  name: oauth2-config
+type: Opaque
+data:
+
+  oauth2_proxy.cfg: ${oauth2_proxy_cfg}
+  tls.crt: ${tls_crt}
+  tls.key: ${tls_key}
