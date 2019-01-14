@@ -109,3 +109,31 @@ resource "google_container_cluster" "admin-redis-elk-cluster" {
     tags = ["apprenticeship", "elk", "redis"]
   }
 }
+
+resource "google_container_cluster" "admin-elk-cluster" {
+  name               = "shared-elk-cluster"
+  zone               = "europe-west1-b"
+  initial_node_count = 2
+  network = "${module.network.self_link}"
+  subnetwork = "${module.network.public_network_name}"
+
+  master_auth {
+    username = "apprenticeshipadmin"
+    password = "${var.admin_cluster_master_password}"
+  }
+
+  node_config {
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+
+    labels {
+      project_name = "apprenticeship"
+    }
+
+    tags = ["apprenticeship", "elk"]
+  }
+}
