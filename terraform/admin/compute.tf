@@ -133,7 +133,9 @@ resource "google_container_cluster" "admin-elk-cluster" {
     labels {
       project_name = "apprenticeship"
     }
+    machine_type   = "n1-standard-4"
 
     tags = ["apprenticeship", "elk"]
   }
 }
+
