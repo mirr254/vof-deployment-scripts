@@ -7,7 +7,7 @@ provider "google" {
 
 terraform {
   backend "gcs" {
-    bucket = "apprenticeship"
+    bucket = "apprenticeship-projects"
     prefix = "admin/terraform"
   }
 }
