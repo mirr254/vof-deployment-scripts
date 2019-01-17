@@ -24,5 +24,6 @@
 			"type": "shell",
 			"script": "setup.sh"
 		}
+		
 	]
 }
