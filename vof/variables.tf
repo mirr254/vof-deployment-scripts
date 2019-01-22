@@ -197,3 +197,11 @@ variable "google_storage_secret_access_key" {}
 variable "db_backup_notification_token" {
   type = "string"
 }
+
+variable "andela_micro_public_key" {
+  type = "string"
+}
+
+variable "learner_micro_public_key" {
+  type = "string"
+}

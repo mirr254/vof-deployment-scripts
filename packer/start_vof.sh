@@ -22,6 +22,8 @@ export RAILS_ENV="$(get_var "railsEnv")"
 export REDIS_IP=$(get_var "redisIp")
 export BUGSNAG_KEY="$(get_var "bugsnagKey")"
 export DEPLOY_ENV="$(get_var "railsEnv")"
+export ANDELA_MICRO_PUBLIC_KEY="$(get_var "andelaMicroPublicKey")"
+export LEARNER_MICRO_PUBLIC_KEY="$(get_var "learnerMicroPublicKey")"
 if [[ "$(get_var "railsEnv")" == "design-v2" ]]; then
  export DEPLOY_ENV="staging"
 fi
@@ -45,6 +47,8 @@ fi
 
 update_application_yml() {
   cat <<EOF >> /home/vof/app/config/application.yml
+ANDELA_MICRO_PUBLIC_KEY: "$(get_var "andelaMicroPublicKey")"
+LEARNER_MICRO_PUBLIC_KEY: "$(get_var "learnerMicroPublicKey")"
 ACTION_CABLE_URL: '$(get_var "cableURL")'
 REDIS_URL: 'redis://${REDIS_IP}'
 BUGSNAG_KEY: '$(get_var "bugsnagKey")'
