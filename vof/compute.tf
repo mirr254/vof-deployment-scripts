@@ -68,8 +68,8 @@ resource "google_compute_instance_template" "vof-app-server-template" {
     serial-port-enable                     = 1
     userMicroserviceApiUrl                 = "${var.user_microservice_api_url}"
     userMicroserviceApiToken               = "${var.user_microservice_api_token}"
-    google_storage_access_key_id           = "${var.google_storage_access_key_id}"
-    google_storage_secret_access_key       = "${var.google_storage_secret_access_key}"
+    googleStorageAccessKeyId               = "${var.google_storage_access_key_id}"
+    googleStorageSecretAccessKey           = "${var.google_storage_secret_access_key}"
     dbBackupNotificationToken              = "${var.db_backup_notification_token}"
     andelaMicroPublicKey                   = "${var.andela_micro_public_key}"
     learnerMicroPublicKey                  = "${var.learner_micro_public_key}"

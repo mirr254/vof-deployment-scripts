@@ -62,8 +62,8 @@ POSTGRES_USER: '$(get_var "databaseUser")'
 POSTGRES_PASSWORD: '$(get_var "databasePassword")'
 POSTGRES_HOST: '$(get_var "databaseHost")'
 POSTGRES_DB: '$(get_var "databaseName")'
-GOOGLE_STORAGE_ACCESS_KEY_ID: '$(get_var "google_storage_access_key_id")'
-GOOGLE_STORAGE_SECRET_ACCESS_KEY: '$(get_var "google_storage_secret_access_key")'
+GOOGLE_STORAGE_ACCESS_KEY_ID: '$(get_var "googleStorageAccessKeyId")'
+GOOGLE_STORAGE_SECRET_ACCESS_KEY: '$(get_var "googleStorageSecretAccessKey")'
 EOF
 
 if [ "$RAILS_ENV" == "production" ]; then
