@@ -198,18 +198,10 @@ variable "db_backup_notification_token" {
   type = "string"
 }
 
-variable "staging_andela_micro_public_key" {
+variable "andela_micro_public_key" {
   type = "string"
 }
 
-variable "production_andela_micro_public_key" {
-  type = "string"
-}
-
-variable "staging_learner_micro_public_key" {
-  type = "string"
-}
-
-variable "production_learner_micro_public_key"{
+variable "learner_micro_public_key" {
   type = "string"
 }

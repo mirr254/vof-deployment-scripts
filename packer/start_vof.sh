@@ -22,6 +22,8 @@ export RAILS_ENV="$(get_var "railsEnv")"
 export REDIS_IP=$(get_var "redisIp")
 export BUGSNAG_KEY="$(get_var "bugsnagKey")"
 export DEPLOY_ENV="$(get_var "railsEnv")"
+export ANDELA_MICRO_PUBLIC_KEY="$(get_var "andelaMicroPublicKey")"
+export LEARNER_MICRO_PUBLIC_KEY="$(get_var "learnerMicroPublicKey")"
 if [[ "$(get_var "railsEnv")" == "design-v2" ]]; then
  export DEPLOY_ENV="staging"
 fi
@@ -45,6 +47,8 @@ fi
 
 update_application_yml() {
   cat <<EOF >> /home/vof/app/config/application.yml
+ANDELA_MICRO_PUBLIC_KEY: "$(get_var "andelaMicroPublicKey")"
+LEARNER_MICRO_PUBLIC_KEY: "$(get_var "learnerMicroPublicKey")"
 ACTION_CABLE_URL: '$(get_var "cableURL")'
 REDIS_URL: 'redis://${REDIS_IP}'
 BUGSNAG_KEY: '$(get_var "bugsnagKey")'
@@ -58,16 +62,12 @@ POSTGRES_USER: '$(get_var "databaseUser")'
 POSTGRES_PASSWORD: '$(get_var "databasePassword")'
 POSTGRES_HOST: '$(get_var "databaseHost")'
 POSTGRES_DB: '$(get_var "databaseName")'
-GOOGLE_STORAGE_ACCESS_KEY_ID: '$(get_var "google_storage_access_key_id")'
-GOOGLE_STORAGE_SECRET_ACCESS_KEY: '$(get_var "google_storage_secret_access_key")'
-STAGING_ANDELA_MICRO_PUBLIC_KEY: '$(get_var "staging_andela_micro_public_key")'
-STAGING_LEARNER_MICRO_PUBLIC_KEY: '$(get_var "staging_learner_micro_public_key")'
+GOOGLE_STORAGE_ACCESS_KEY_ID: '$(get_var "googleStorageAccessKeyId")'
+GOOGLE_STORAGE_SECRET_ACCESS_KEY: '$(get_var "googleStorageSecretAccessKey")'
 EOF
 
 if [ "$RAILS_ENV" == "production" ]; then
   cat <<EOF >> /home/vof/app/config/application.yml
-PRODUCTION_ANDELA_MICRO_PUBLIC_KEY: '$(get_var "production_andela_micro_public_key")'
-PRODUCTION_LEARNER_MICRO_PUBLIC_KEY: '$(get_var "production_learner_micro_public_key")'
 AUTH_URL: 'https://vof-login-prod.andela.com'
 AUTH_ACCESS_TOKEN: '2574fd1d8c985221c7053931b614359feaf981840fe1c65c9d79e4938899f036e0fe9a208d40f3137f76a79be51fe3d4d88b4eb68d5d44d0cc2e326559bbbf82'
 PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu/PXShcrLcoKYYr6sAuU\nGPjmb0qSwo5aYDjnXJ2fWbzeC+PadR2n6Pn9vWwZzOv6nSM5ocVNNRpAyHvT0mQf\n7DikDJANSwpQHwYpKkgdBDydzMeOBhFpkhLeUOfnF4a/sfB8OP+/PvW5vsRhx4WR\n+1PZDFXuCq/AbcBuzBsNJ8Q3gmB2/m7VeltIb5QXIs5zHCFC0tLS/WCNYfcfhviW\n7sz3qVSggrhEs2SgpvMBwiQHwNkP7/vfrNl6pKctLTvibdlWfF9JiER+a8Eq/Dge\nSnt70Gtn5rQnkN08DNLfxjiSskzef8pNh+9H5oI7Ee5UJpIOEyQ7p+XzEDzT1zy5\nTQIDAQAB\n-----END PUBLIC KEY-----"
