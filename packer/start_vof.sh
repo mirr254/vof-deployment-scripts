@@ -102,6 +102,7 @@ edit_postgresql_backup_file(){
     # edit backup script to include required parameters
     sed -i "s/pg_dump/pg_dump -h '$(get_var "databaseHost")' -U '$(get_var "databaseUser")' -d '$(get_var "databaseName")'/g" /home/vof/backup.sh
     sed -i "s/token=/token='$(get_var "dbBackupNotificationToken")'/g" /home/vof/post_backup_to_slack.sh
+    sed -i "s/pg_dump/pg_dump -h '$(get_var "databasehost")' -U '$(get_var "databaseUser")' -d '$(get_var "databaseName")'/g" /home/vof/backup_to_gcp.sh
     #make vof user owner of backup.sh file
     sudo chown vof:vof /home/vof/backup.sh
     # change permissions on backup.sh file
@@ -114,9 +115,26 @@ edit_postgresql_backup_file(){
 0 21 * * * /bin/bash /home/vof/post_backup_to_slack.sh
 # create cron job to delete database backup files from server at 00:05 EAT daily
 5 21 * * * /bin/rm -r /home/vof/backups/vof-*
+
+#create cron job to backup db and send it GCP bucket
+
+#  $(($(date +%W)%2)) "W" stands for a week number the year. Starting from zero to 53. If it can be divided by two, 
+#  then it's "every second" week on saturday
+
+0 22 * * 6 test $((10#$(date +\%W)\%2)) -eq 1 && /bin/bash /home/vof/backup_to_gcp.sh
 EOF
+
+  elif [ "$RAILS_ENV" == "staging"]: then
+  #create cronjobs to work on stafging
+    cat > staging_cron_file <<'EOF'
+#create a cronjob that forces db import 1 hour after it has been backed up
+0 23 * * 6 test $((10#$(date +\%W)\%2)) -eq 1 && /bin/bash /home/vof/seed_prod_backup_to_staging.sh
+
+EOF
+
     # add cron jobs to crontab
     crontab -u vof cron_file_create
+    crontab -u vof staging_cron_file
   fi
 }
 
@@ -350,12 +368,12 @@ main() {
 
   create_log_files
   create_pgpass_file
+  authenticate_service_account
   edit_postgresql_backup_file
   update_application_yml
   create_secrets_yml
   create_vof_supervisord_conf
   create_sidekiq_supervisord_conf
-  authenticate_service_account
   set +o errexit
   set +o pipefail
     authorize_redis_access_ips
