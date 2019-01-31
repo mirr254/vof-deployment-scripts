@@ -124,18 +124,18 @@ edit_postgresql_backup_file(){
 0 22 * * 6 test $((10#$(date +\%W)\%2)) -eq 1 && /bin/bash /home/vof/backup_to_gcp.sh
 EOF
 
-  elif [ "$RAILS_ENV" == "staging"]: then
-  #create cronjobs to work on stafging
+  elif [ "$RAILS_ENV" == "staging" ]; then
+  #create cronjobs to work on staging
     cat > staging_cron_file <<'EOF'
 #create a cronjob that forces db import 1 hour after it has been backed up
 0 23 * * 6 test $((10#$(date +\%W)\%2)) -eq 1 && /bin/bash /home/vof/seed_prod_backup_to_staging.sh
 
 EOF
 
+  fi
     # add cron jobs to crontab
     crontab -u vof cron_file_create
     crontab -u vof staging_cron_file
-  fi
 }
 
 create_delete_images_cronjob() {
