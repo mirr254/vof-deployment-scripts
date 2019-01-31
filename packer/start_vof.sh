@@ -124,6 +124,9 @@ edit_postgresql_backup_file(){
 0 22 * * 6 test $((10#$(date +\%W)\%2)) -eq 1 && /bin/bash /home/vof/backup_to_gcp.sh
 EOF
 
+  # add cron job to crontab
+  crontab -u vof cron_file_create
+
   elif [ "$RAILS_ENV" == "staging" ]; then
   #create cronjobs to work on staging
     cat > staging_cron_file <<'EOF'
@@ -132,10 +135,9 @@ EOF
 
 EOF
 
-  fi
-    # add cron jobs to crontab
-    crontab -u vof cron_file_create
+    # add cron job to crontab
     crontab -u vof staging_cron_file
+  fi
 }
 
 create_delete_images_cronjob() {
