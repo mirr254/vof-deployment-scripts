@@ -96,13 +96,17 @@ edit_postgresql_backup_file(){
     #change permissions on backup folder
     chmod 777 /home/vof/backups
     chmod 777 /home/vof/post_backup_to_slack.sh
+    chmod 777 /home/vof/backup_to_gcp.sh
+    chmod 777 /home/vof/seed_prod_backup_to_staging.sh
     #make vof user owner of backups folder
     sudo chown vof:vof /home/vof/backups
     sudo chown vof:vof /home/vof/post_backup_to_slack.sh
+    sudo chown vof:vof /home/vof/seed_prod_backup_to_staging.sh
+    sudo chown vof:vof /home/vof/backup_to_gcp.sh
     # edit backup script to include required parameters
     sed -i "s/pg_dump/pg_dump -h '$(get_var "databaseHost")' -U '$(get_var "databaseUser")' -d '$(get_var "databaseName")'/g" /home/vof/backup.sh
     sed -i "s/token=/token='$(get_var "dbBackupNotificationToken")'/g" /home/vof/post_backup_to_slack.sh
-    sed -i "s/pg_dump/pg_dump -h '$(get_var "databasehost")' -U '$(get_var "databaseUser")' -d '$(get_var "databaseName")'/g" /home/vof/backup_to_gcp.sh
+    sed -i "s/pg_dump/pg_dump -h '$(get_var "databaseHost")' -U '$(get_var "databaseUser")' -d '$(get_var "databaseName")'/g" /home/vof/backup_to_gcp.sh
     #make vof user owner of backup.sh file
     sudo chown vof:vof /home/vof/backup.sh
     # change permissions on backup.sh file
