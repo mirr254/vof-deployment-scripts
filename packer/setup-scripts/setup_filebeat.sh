@@ -17,13 +17,14 @@ filebeat:
 
   registry_file: /var/lib/filebeat/registry
 
-output:
-  logstash:
-    hosts: ['192.168.1.2:5044']
-    bulk_max_size: 1024
-
-    ssl:
-      certificate_authorities: ['/etc/pki/tls/certs/logstash-forwarder.crt']
+output.logstash:
+  enabled: true
+  hosts: ["test-logstash.andela.com"]
+  ssl:
+    enabled: true
+    certificate_authorities: ["/etc/pki/tls/certs/ca.crt"]
+    certificate: "/etc/pki/tls/certs/client.crt"
+    key: "/etc/pki/tls/certs/client.key"
 
 shipper:
 
@@ -36,7 +37,9 @@ EOF"
 
 setup_filebeat(){
   sudo mkdir -p /etc/pki/tls/certs
-  sudo gsutil cp gs://${BUCKET_NAME}/elk-ssl/logstash-forwarder.crt /etc/pki/tls/certs/logstash-forwarder.crt
+  sudo gsutil cp gs://${BUCKET_NAME}/elk-ssl/client.crt /etc/pki/tls/certs/client.crt
+  sudo gsutil cp gs://${BUCKET_NAME}/elk-ssl/client.key /etc/pki/tls/certs/client.key
+  sudo gsutil cp gs://${BUCKET_NAME}/elk-ssl/ca.crt /etc/pki/tls/certs/ca.crt
   create_filebeat_config_file
   sudo systemctl restart filebeat
   sudo systemctl enable filebeat
