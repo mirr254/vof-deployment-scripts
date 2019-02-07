@@ -9,6 +9,7 @@ spec:
   selector:
     app: oauth2-proxy
   type: LoadBalancer
+  loadBalancerIP: 35.205.250.58
   ports:
     - port: 443
       targetPort: 4433

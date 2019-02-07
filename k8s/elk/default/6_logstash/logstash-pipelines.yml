@@ -11,11 +11,11 @@ data:
     input {
         beats {
             port => 8751
-            ssl => true
-            ssl_certificate_authorities => ["/usr/share/logstash/ssl/ca.crt"]
-            ssl_key => "/usr/share/logstash/ssl/logstash.key"
-            ssl_certificate => "/usr/share/logstash/ssl/logstash.crt"
-            ssl_verify_mode => force_peer
+            ssl => false
+            # ssl_certificate_authorities => ["/usr/share/logstash/ssl/ca.crt"]
+            # ssl_key => "/usr/share/logstash/ssl/logstash.key"
+            # ssl_certificate => "/usr/share/logstash/ssl/logstash.crt"
+            # ssl_verify_mode => force_peer
         }
     }
 

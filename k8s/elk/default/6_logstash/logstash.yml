@@ -5,6 +5,7 @@ metadata:
   name: logstash
 spec:
   type: LoadBalancer
+  loadBalancerIP: 34.76.115.196
   selector:
     app: logstash
   ports:
@@ -30,7 +31,7 @@ spec:
     spec:
       containers:
         - name: logstash
-          image: docker.elastic.co/logstash/logstash:6.4.2
+          image: docker.elastic.co/logstash/logstash:6.5.2
           ports:
             - containerPort: 8751
           volumeMounts:
