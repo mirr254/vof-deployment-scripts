@@ -29,8 +29,13 @@ output.logstash:
 shipper:
 
 logging:
+  to_files: true
   files:
+    path: /var/log/filebeat
+    name: filebeat.log
     rotateeverybytes: 10485760 # = 10MB
+    keepfiles: 7
+  level: debug
 EOF"
 
 }
