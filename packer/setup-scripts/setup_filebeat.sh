@@ -19,7 +19,7 @@ filebeat:
 
 output.logstash:
   enabled: true
-  hosts: ["test-logstash.andela.com"]
+  hosts: ["test-logstash.andela.com:8751"]
   ssl:
     enabled: true
     certificate_authorities: ["/etc/pki/tls/certs/ca.crt"]

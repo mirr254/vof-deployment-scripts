@@ -259,6 +259,7 @@ authorize_redis_access_ips() {
 }
 
 get_database_dump_file() {
+  mkdir 
   if [[ "$RAILS_ENV" == "production" || "$RAILS_ENV" == "staging" || "$RAILS_ENV" == "sandbox" ]]; then
     if gsutil cp gs://${BUCKET_NAME}/database-backups/vof_${RAILS_ENV}.sql /home/vof/vof_${RAILS_ENV}.sql; then
       echo "Database dump file created succesfully"
