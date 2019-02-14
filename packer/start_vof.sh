@@ -24,6 +24,7 @@ export BUGSNAG_KEY="$(get_var "bugsnagKey")"
 export DEPLOY_ENV="$(get_var "railsEnv")"
 export ANDELA_MICRO_PUBLIC_KEY="$(get_var "andelaMicroPublicKey")"
 export LEARNER_MICRO_PUBLIC_KEY="$(get_var "learnerMicroPublicKey")"
+export GCLOUD_VOF_PROJECT="$(get_var "projectId")"
 if [[ "$(get_var "railsEnv")" == "design-v2" ]]; then
  export DEPLOY_ENV="staging"
 fi

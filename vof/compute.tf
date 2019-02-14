@@ -73,6 +73,7 @@ resource "google_compute_instance_template" "vof-app-server-template" {
     dbBackupNotificationToken              = "${var.db_backup_notification_token}"
     andelaMicroPublicKey                   = "${var.andela_micro_public_key}"
     learnerMicroPublicKey                  = "${var.learner_micro_public_key}"
+    projectId                              = "${var.project_id}"
   }
 
   lifecycle {
