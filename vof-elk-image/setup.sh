@@ -126,7 +126,7 @@ actions:
       direction: older
       timestring: '%Y.%m.%d'
       unit: days
-      unit_count: 30
+      unit_count: 10
   2:
     action: delete_indices
     description: >-
@@ -146,7 +146,7 @@ actions:
       direction: older
       timestring: '%Y.%m.%d'
       unit: days
-      unit_count: 30
+      unit_count: 10
 EOF"
 
 }

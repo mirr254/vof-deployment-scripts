@@ -22,14 +22,13 @@ metricbeat.modules:
   processes: ['.*']
   cpu_ticks: false
 
-output.logstash:
-  enabled: true
-  hosts: ["test-logstash.andela.com"]
-  ssl:
-    enabled: true
-    certificate_authorities: ["/etc/pki/tls/certs/ca.crt"]
-    certificate: "/etc/pki/tls/certs/client.crt"
-    key: "/etc/pki/tls/certs/client.key"
+output:
+  logstash:
+    hosts: ["192.168.1.2:5044"]
+    bulk_max_size: 1024
+
+    ssl:
+      certificate_authorities: ["/etc/pki/tls/certs/logstash-forwarder.crt"]
 
 shipper:
 
@@ -38,7 +37,7 @@ logging:
     rotateeverybytes: 10485760 # = 10MB
 
 setup.kibana:
-  host: "test-vof-kibana.andela.com"
+  host: "192.168.1.2:5601"
 EOF'
 
   sudo systemctl start metricbeat
