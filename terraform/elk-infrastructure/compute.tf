@@ -5,6 +5,15 @@ resource "google_compute_instance" "vof-elk-instance" {
 
   tags = ["http-server", "https-server", "vof-elk-instance"]
 
+  labels { 
+          product    = "${var.product_tag}"
+          component  = "elk"
+          env        = "staging"
+          owner      = "${var.owner_tag}"
+          maintainer = "${var.maintainer_tag}"
+          state      = "$in-use"
+          }
+
   boot_disk {
     initialize_params {
       image = "vof-elk-base-image"

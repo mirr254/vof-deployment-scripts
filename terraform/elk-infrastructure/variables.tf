@@ -43,3 +43,18 @@ variable "elk_state_path" {
   type = "string"
   default = "state/vof-elk-infra/terraform.tfstate"
 }
+
+variable "product_tag"{
+  type = "string"
+  default = "vof"
+}
+
+variable "maintainer_tag"{
+  type = "string"
+  default = "samuel_ngigi"
+}
+
+variable "owner_tag"{
+  type = "string"
+  default = "unknown"
+}

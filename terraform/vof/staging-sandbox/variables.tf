@@ -170,3 +170,23 @@ variable "google_storage_secret_access_key" {}
 variable "db_backup_notification_token" {
   type = "string"
 }
+
+variable "product_tag"{
+  type = "string"
+  default = "vof"
+}
+
+variable "maintainer_tag"{
+  type = "string"
+  default = "samuel_ngigi"
+}
+
+variable "owner_tag"{
+  type = "string"
+  default = "unknown"
+}
+
+variable "env_tag"{
+  type = "string"
+  default = "staging"
+}

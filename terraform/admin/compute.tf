@@ -43,6 +43,15 @@ resource "google_compute_instance" "bastion_host" {
 
   tags = ["${format("%s-bastion-host", var.project_name)}"]
 
+  labels { 
+        product    = "${var.product_tag}"
+        component  = "elk"
+        env        = "staging"
+        owner      = "${var.owner_tag}"
+        maintainer = "${var.maintainer_tag}"
+        state      = "in-use"
+        }
+
   boot_disk {
     initialize_params {
       image = "${var.bastion_image}"
@@ -104,6 +113,12 @@ resource "google_container_cluster" "admin-redis-elk-cluster" {
 
     labels {
       project_name = "apprenticeship"
+      product    = "${var.product_tag}"
+      component  = "redis"
+      env        = "production"
+      owner      = "isaack_ndungu"
+      maintainer = "${var.maintainer_tag}"
+      state      = "in-use"
     }
 
     tags = ["apprenticeship", "elk", "redis"]

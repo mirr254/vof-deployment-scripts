@@ -76,3 +76,19 @@ variable "redis_server_image" {
 variable "admin_cluster_master_password" {
   type = "string"
 }
+
+variable "product_tag"{
+  type = "string"
+  default = "vof"
+}
+
+variable "maintainer_tag"{
+  type = "string"
+  default = "samuel_ngigi"
+}
+
+variable "owner_tag"{
+  type = "string"
+  default = "unknown"
+}
+

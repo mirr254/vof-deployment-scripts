@@ -63,6 +63,15 @@ resource "google_compute_instance_template" "template" {
     "${var.project_name}-app-server",
   ]
 
+  labels { 
+    product    = "${var.product_tag}"
+    component  = "elk"
+    env        = "staging"
+    owner      = "${var.owner_tag}"
+    maintainer = "${var.maintainer_tag}"
+    state      = "in-use"
+    }
+
   network_interface {
     subnetwork    = "${format("%s-%s-private-sub-network", var.project_name, var.environment)}"
     access_config = {}
