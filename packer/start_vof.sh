@@ -381,10 +381,6 @@ main() {
   create_secrets_yml
   create_vof_supervisord_conf
   create_sidekiq_supervisord_conf
-  set +o errexit
-  set +o pipefail
-    authorize_redis_access_ips
-    authorize_database_access_networks
   set -o errexit
   set -o pipefail
   get_database_dump_file
@@ -395,6 +391,10 @@ main() {
 
   start_app
   configure_google_fluentd_logging
+  set +o errexit
+  set +o pipefail
+    authorize_redis_access_ips
+    authorize_database_access_networks
 
   create_delete_images_cronjob
   update_downtime_script
