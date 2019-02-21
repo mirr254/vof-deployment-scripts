@@ -40,7 +40,7 @@ install_elastic_search(){
     # edit elasticsearch configs
     sudo sed -i '55 s/#//' /etc/elasticsearch/elasticsearch.yml
     sudo sed -i '59 s/#//' /etc/elasticsearch/elasticsearch.yml
-    sudo sed -i 's/192.168.0.1/localhost/g' /etc/elasticsearch/elasticsearch.yml
+    sudo sed -i 's/192.168.0.1/127.0.0.1/g' /etc/elasticsearch/elasticsearch.yml
 
     sudo service elasticsearch start
     sudo systemctl enable elasticsearch
@@ -52,7 +52,6 @@ install_kibana(){
     # edit kibana configs
     sudo sed -i '2 s/#//' /etc/kibana/kibana.yml
     sudo sed -i '7 s/#//' /etc/kibana/kibana.yml
-    sudo sed -i '21 s/#//' /etc/kibana/kibana.yml
 
     sudo service kibana start
     sudo systemctl enable kibana
