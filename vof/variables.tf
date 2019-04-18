@@ -205,3 +205,11 @@ variable "andela_micro_public_key" {
 variable "learner_micro_public_key" {
   type = "string"
 }
+
+variable "mailgun_api_key"{
+  type = "string"
+}
+
+variable "mailgun_domain_name"{
+  type = "string"
+}

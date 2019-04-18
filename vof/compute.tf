@@ -73,6 +73,8 @@ resource "google_compute_instance_template" "vof-app-server-template" {
     dbBackupNotificationToken              = "${var.db_backup_notification_token}"
     andelaMicroPublicKey                   = "${var.andela_micro_public_key}"
     learnerMicroPublicKey                  = "${var.learner_micro_public_key}"
+    mailgunApiKey                          = "${var.mailgun_api_key}"
+    mailgunDomainName                    = "${var.mailgun_domain_name}"
   }
 
   lifecycle {
